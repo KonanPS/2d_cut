@@ -72,7 +72,7 @@ def delete_same_combis(combis):
 
 	return acc
 
-def gen_cuts(pallets):
+def gen_cuts(pallets, total_len):
 	"""
 	takes list of lists
 	generates combis for cuts in repect to num of specified elements
@@ -80,41 +80,36 @@ def gen_cuts(pallets):
 	"""
 	first = pallets[0]
 	rest = pallets[1:]
-	# print 'First:', first
-	# print "Rest:", rest
 
 	if rest:
-		cuts = gen_cuts(rest)
+		cuts = gen_cuts(rest, total_len)
 	else:
-		return {0 : first}
+		return {0 : pallets}
 
 	acc = cuts.copy()
 	for pallet in cuts.values():
 		new_cut = []
 		new_cut.append(pallet)
 		new_cut.append(first)
-		acc[len(acc)] = new_cut
-	acc[len(acc)] = first
+		if nested_sum(new_cut) == total_len:
+				acc[len(acc)] = new_cut
+	acc[len(acc)] = [first]
+	
 	return acc
 
-	# acc = cuts[:]
-	# new_cut_acc = []
-	# print
-	# print "Cuts:", cuts
-	# for cut in cuts:
-	# 	new_cut = []
-	# 	new_cut.append(cut)
-	# 	new_cut.append(first)
-	# 	new_cut_acc.append(new_cut)
-	# 	print "new_cut:", new_cut
-	# 	print "new_cut_acc:", new_cut_acc
-	# 	print
-	
-	# 	for new_cut in new_cut_acc:
-	# 		acc.append(new_cut)
-	# print "acc:", acc
-	# return acc
+def best_cut(cuts, pallet_len):
+	"""
+	takes dict with possible cuts
+	returns best cut
+	"""
+	for cut in cuts.values():
+		pass	
 
+def filter_cut_by_elem_num(cuts,pieces_dict):
+	"""
+	leaves cuts that uses specified num of pieces
+	"""
+	pass
 
 
 def nested_sum(nested_list):
@@ -155,7 +150,7 @@ print
 print "Len:", len(distinc_combis)
 print '-'*40 + '\n'
 
-cuts = gen_cuts(distinc_combis)
+cuts = gen_cuts(distinc_combis, sum_length)
 output = open('out.txt','w')
 for cut in cuts:
 	output.write(str(cut) + '\n')
