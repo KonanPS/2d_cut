@@ -118,7 +118,7 @@ def best_cut(cuts, PALLET_LEN):
 	# print '\ncuts.values():', len(cuts.values())
 	for item in cuts.items():
 		cut = item[1]
-		print 'cut:', cut
+		# print 'cut:', cut
 		residues = 0
 		for pallet in cut:
 			residues += PALLET_LEN - sum(pallet)
@@ -195,7 +195,8 @@ distinc_combis = delete_same_combis(allcombis)
 cuts = gen_cuts(distinc_combis, sum_length)
 # print 'Cuts before filter:', cuts
 # print
-
+print 'Cuts: ',cuts
+print
 filter_cuts_by_num_elem(cuts, pieces_dict)
 print "Filtered Cuts:", cuts
 print
