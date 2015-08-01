@@ -9,13 +9,14 @@ def get_pieces_from_file(filename, separator):
 	elements = open(filename)
 
 	pieces = []
+	pieces_dict = {}
 
 	line = elements.readline()
 	while line:
 		temp = line.split(separator)
 		length = float(temp[0])
 		num = int(temp[1])
-
+		pieces_dict[length] = num
 		for _ind in range(num):
 			pieces.append(length)
 
@@ -23,11 +24,11 @@ def get_pieces_from_file(filename, separator):
 
 	elements.close()
 
-	return pieces
+	return pieces, pieces_dict
 
 def gen_pallets(pieces, pallet_len):
 	"""
-	get list of all pieces and
+	takes list of all pieces and
 	generates all possible combinations of different length
 	returns list of conbis (list)
 	"""
@@ -40,16 +41,23 @@ def gen_pallets(pieces, pallet_len):
 		return [[first]]
 
 	new_acc = acc[:]
+	print 'new_acc: ', new_acc
+	new_acc.append([first])
 
 	for pallet in acc:
-		if sum(pallet + [first]) < pallet_len:
-			new_acc.append(pallet + [first]) # new el to the end of pallet
-		temp = pallet[:]
-		for i in range(len(pallet)):
-			new_combi = temp.insert(i,first) # new pallet variant
-			if new_combi and sum(new_combi) < pallet_len:
-				new_acc.append(new_combi)
-	new_acc.append([first]) # new el as new pallet
+		print 'pallet in acc: ', pallet
+		new_pallet = pallet[:]
+		new_pallet.append(first)
+		if sum(new_pallet) < pallet_len:
+			new_acc.append(new_pallet)
+			
+			for i in range(len(pallet) + 1):
+				temp = pallet[:]
+				print 'temp before insert', temp
+				temp.insert(i,first)
+				print 'temp after insert: ', temp
+				new_acc.append(temp)
+
 	return new_acc
 
 def delete_same_combis(combis):
@@ -105,12 +113,32 @@ def best_cut(cuts, pallet_len):
 	for cut in cuts.values():
 		pass	
 
-def filter_cut_by_elem_num(cuts,pieces_dict):
+def is_contains_specified_elems(cut,pieces_dict):
+	"""
+	check if cut contains exectlly specified pieses
+	"""
+	cut_details = {}
+	for pallet in cut:
+		for elem in pallet:
+			print pallet, elem
+			if elem in cut_details:
+				cut_details[elem] += 1
+			else:
+				cut_details[elem] = 1
+	print cut_details
+	print cut_details == pieces_dict
+	if cut_details == pieces_dict:
+		return True
+	else:
+		return False
+
+def filter_cuts_by_num_elem(cuts,pieces_dict):
 	"""
 	leaves cuts that uses specified num of pieces
 	"""
-	pass
-
+	for key in cuts.keys():
+		if not is_contains_specified_elems(cuts[key],pieces_dict):
+			del cuts[key]
 
 def nested_sum(nested_list):
 	'''
@@ -128,19 +156,20 @@ def nested_sum(nested_list):
 	return total
 
 
-elem = get_pieces_from_file('elements.txt',';')
+elem, pieces_dict = get_pieces_from_file('elements.txt',';')
 sum_length = sum(elem)
 
 print "All elements:", elem
+print "pieces_dict:", pieces_dict
 print 'Total length: ', sum_length
 
 allcombis = gen_pallets(elem,6)
 
-# print '-'*40
-# print "All combis:", allcombis
-# print
-# print "Len:", len(allcombis)
-# print '-'*40 + '\n'
+print '-'*40
+print "All combis:", allcombis
+print
+print "Len:", len(allcombis)
+print '-'*40 + '\n'
 
 distinc_combis = delete_same_combis(allcombis)
 
@@ -151,6 +180,10 @@ print "Len:", len(distinc_combis)
 print '-'*40 + '\n'
 
 cuts = gen_cuts(distinc_combis, sum_length)
+print 'Cuts before filter:', cuts
+filter_cuts_by_num_elem(cuts, pieces_dict)
+print "Filtered Cuts:", cuts
+
 output = open('out.txt','w')
 for cut in cuts:
 	output.write(str(cut) + '\n')
@@ -158,7 +191,7 @@ output.close()
 
 # print '-'*40
 # print "Len:", len(cuts)
-print cuts
+
 # for cut in cuts:
 # 	print cut
 # print
