@@ -41,11 +41,11 @@ def gen_pallets(pieces, pallet_len):
 		return [[first]]
 
 	new_acc = acc[:]
-	print 'new_acc: ', new_acc
+	# print 'new_acc: ', new_acc
 	new_acc.append([first])
 
 	for pallet in acc:
-		print 'pallet in acc: ', pallet
+		# print 'pallet in acc: ', pallet
 		new_pallet = pallet[:]
 		new_pallet.append(first)
 		if sum(new_pallet) < pallet_len:
@@ -53,9 +53,9 @@ def gen_pallets(pieces, pallet_len):
 			
 			for i in range(len(pallet) + 1):
 				temp = pallet[:]
-				print 'temp before insert', temp
+				# print 'temp before insert', temp
 				temp.insert(i,first)
-				print 'temp after insert: ', temp
+				# print 'temp after insert: ', temp
 				new_acc.append(temp)
 
 	return new_acc
@@ -93,14 +93,17 @@ def gen_cuts(pallets, total_len):
 		cuts = gen_cuts(rest, total_len)
 	else:
 		return {0 : pallets}
-
+	# print 'cuts: ', cuts
+	# print 'cuts_values: ', cuts.values()
 	acc = cuts.copy()
-	for pallet in cuts.values():
-		new_cut = []
-		new_cut.append(pallet)
-		new_cut.append(first)
-		if nested_sum(new_cut) == total_len:
-				acc[len(acc)] = new_cut
+	for pallets in cuts.values():
+		# print 'pallet in cuts.values', pallets
+		for pallet in pallets:
+			new_cut = []
+			new_cut.append(pallet)
+			new_cut.append(first)
+			if nested_sum(new_cut) == total_len:
+					acc[len(acc)] = new_cut
 	acc[len(acc)] = [first]
 	
 	return acc
@@ -120,13 +123,13 @@ def is_contains_specified_elems(cut,pieces_dict):
 	cut_details = {}
 	for pallet in cut:
 		for elem in pallet:
-			print pallet, elem
+			# print pallet, elem
 			if elem in cut_details:
 				cut_details[elem] += 1
 			else:
 				cut_details[elem] = 1
-	print cut_details
-	print cut_details == pieces_dict
+	# print cut_details
+	# print cut_details == pieces_dict
 	if cut_details == pieces_dict:
 		return True
 	else:
@@ -181,6 +184,7 @@ print '-'*40 + '\n'
 
 cuts = gen_cuts(distinc_combis, sum_length)
 print 'Cuts before filter:', cuts
+print
 filter_cuts_by_num_elem(cuts, pieces_dict)
 print "Filtered Cuts:", cuts
 
