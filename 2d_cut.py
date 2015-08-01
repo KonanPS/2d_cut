@@ -108,13 +108,23 @@ def gen_cuts(pallets, total_len):
 	
 	return acc
 
-def best_cut(cuts, pallet_len):
+def best_cut(cuts, PALLET_LEN):
 	"""
 	takes dict with possible cuts
 	returns best cut
 	"""
-	for cut in cuts.values():
-		pass	
+	result = {}
+	# key = 0
+	# print '\ncuts.values():', len(cuts.values())
+	for item in cuts.items():
+		cut = item[1]
+		print 'cut:', cut
+		residues = 0
+		for pallet in cut:
+			residues += PALLET_LEN - sum(pallet)
+		result[item[0]] = residues # key is the key in cuts dict
+		# key += 1
+	return result
 
 def is_contains_specified_elems(cut,pieces_dict):
 	"""
@@ -168,30 +178,33 @@ print 'Total length: ', sum_length
 
 allcombis = gen_pallets(elem,6)
 
-print '-'*40
-print "All combis:", allcombis
-print
-print "Len:", len(allcombis)
-print '-'*40 + '\n'
+# print '-'*40
+# print "All combis:", allcombis
+# print
+# print "Len:", len(allcombis)
+# print '-'*40 + '\n'
 
 distinc_combis = delete_same_combis(allcombis)
 
-print '-'*40
-print 'Distinct combis:',distinc_combis
-print
-print "Len:", len(distinc_combis)
-print '-'*40 + '\n'
+# print '-'*40
+# print 'Distinct combis:',distinc_combis
+# print
+# print "Len:", len(distinc_combis)
+# print '-'*40 + '\n'
 
 cuts = gen_cuts(distinc_combis, sum_length)
-print 'Cuts before filter:', cuts
-print
+# print 'Cuts before filter:', cuts
+# print
+
 filter_cuts_by_num_elem(cuts, pieces_dict)
 print "Filtered Cuts:", cuts
+print
 
-output = open('out.txt','w')
-for cut in cuts:
-	output.write(str(cut) + '\n')
-output.close()
+print 'best_cut:', best_cut(cuts,6)
+# output = open('out.txt','w')
+# for cut in cuts:
+# 	output.write(str(cut) + '\n')
+# output.close()
 
 # print '-'*40
 # print "Len:", len(cuts)
