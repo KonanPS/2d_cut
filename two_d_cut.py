@@ -8,7 +8,7 @@ def get_pieces_from_file(filename, separator):
 	"""	
 	elements = open(filename)
 
-	pieces = []
+	pieces_list = []
 	pieces_dict = {}
 
 	line = elements.readline()
@@ -18,13 +18,13 @@ def get_pieces_from_file(filename, separator):
 		num = int(temp[1])
 		pieces_dict[length] = num
 		for _ind in range(num):
-			pieces.append(length)
+			pieces_list.append(length)
 
 		line = elements.readline()
 
 	elements.close()
 
-	return pieces, pieces_dict
+	return pieces_list, pieces_dict
 
 def gen_pallets(pieces, pallet_len):
 	"""
@@ -46,16 +46,14 @@ def gen_pallets(pieces, pallet_len):
 
 	for pallet in acc:
 		# print 'pallet in acc: ', pallet
-		new_pallet = pallet[:]
-		new_pallet.append(first)
-		if sum(new_pallet) < pallet_len:
-			new_acc.append(new_pallet)
-			
-			for i in range(len(pallet) + 1):
-				temp = pallet[:]
-				# print 'temp before insert', temp
-				temp.insert(i,first)
-				# print 'temp after insert: ', temp
+		# new_pallet = pallet[:]
+		# new_pallet.append(first)
+		for i in range(len(pallet) + 1):
+			temp = pallet[:]
+			# print 'temp before insert', temp
+			temp.insert(i,first)
+			# print 'temp after insert: ', temp
+			if sum(temp) <= pallet_len:
 				new_acc.append(temp)
 
 	return new_acc
