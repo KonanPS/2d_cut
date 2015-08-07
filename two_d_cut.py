@@ -17,6 +17,7 @@ def get_pieces_from_file(filename, separator):
 		length = float(temp[0])
 		num = int(temp[1])
 		pieces_dict[length] = num
+
 		for _ind in range(num):
 			pieces_list.append(length)
 
@@ -41,19 +42,13 @@ def gen_pallets(pieces, pallet_len):
 		return [[first]]
 
 	new_acc = acc[:]
-	# print 'new_acc: ', new_acc
 	new_acc.append([first])
 
 	for pallet in acc:
-		# print 'pallet in acc: ', pallet
-		# new_pallet = pallet[:]
-		# new_pallet.append(first)
-		for i in range(len(pallet) + 1):
-			temp = pallet[:]
-			# print 'temp before insert', temp
-			temp.insert(i,first)
-			# print 'temp after insert: ', temp
-			if sum(temp) <= pallet_len:
+		if sum(pallet) + first <= pallet_len:
+			for i in range(len(pallet) + 1):
+				temp = pallet[:]
+				temp.insert(i,first)
 				new_acc.append(temp)
 
 	return new_acc
@@ -62,7 +57,7 @@ def delete_same_combis(combis):
 	"""
 	takes list of combis and delete the same 
 	same are in combis because many elemets of the same length
-	returns list of distinct conbis
+	returns list of distinct combis
 	"""
 	acc = []
 	
@@ -78,30 +73,29 @@ def delete_same_combis(combis):
 
 	return acc
 
-def gen_cuts(pallets, total_len):
+def gen_cuts(pallets_list):
 	"""
 	takes list of lists
 	generates combis for cuts in repect to num of specified elements
-	returns list of lists of pallet(list of elements)
+	returns dict pallet_id : pallet (list of elements) 
+	pallet_id starts from 0
+	pallets_list is list of distinct combi of elements within pallet length [[1],[2],[3],[1,2],[1,3],[2,1],[2,3],[3,1],[3,2],[1,2,3],...]
 	"""
-	first = pallets[0]
-	rest = pallets[1:]
+	first = pallets_list[0]
+	rest = pallets_list[1:]
 
 	if rest:
-		cuts = gen_cuts(rest, total_len)
+		cuts = gen_cuts(rest)
 	else:
-		return {0 : pallets}
-	# print 'cuts: ', cuts
-	# print 'cuts_values: ', cuts.values()
+		return {0 : pallets_list} # {0: [[1,2,3]]}
+
 	acc = cuts.copy()
-	for pallets in cuts.values():
-		# print 'pallet in cuts.values', pallets
-		for pallet in pallets:
-			new_cut = []
-			new_cut.append(pallet)
-			new_cut.append(first)
-			if nested_sum(new_cut) == total_len:
-					acc[len(acc)] = new_cut
+
+	for cut in cuts.values(): #list of pallets combinations. pallets cut on elements
+		new_cut = cut[:]
+		new_cut.append(first)
+		acc[len(acc)] = new_cut # add element to dict with next id (incremented from num of id in dict already)
+		
 	acc[len(acc)] = [first]
 	
 	return acc
