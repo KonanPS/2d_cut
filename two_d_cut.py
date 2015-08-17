@@ -44,26 +44,24 @@ def gen_pallets(pieces, recur):
 	if rest:
 		acc = gen_pallets(rest,recur)
 	else:
-		return [[first]]
+		s = set()
+		s.add((first,))
+		return s
 
-	new_acc = acc[:]
-	new_acc.append([first])
+	new_acc = acc.copy()
+	new_acc.add((first,))
 
 	print datetime.datetime.now(), '#', recur, 'len acc:', len(new_acc)
-
 	for pallet in acc:
 		sum_pallet = sum(pallet)
 		if sum_pallet + first <= PALLET_LEN:
 			for i in range(len(pallet) + 1):
-				temp = pallet[:]
+				temp = list(pallet)
 				temp.insert(i,first)
 			#too expensive operation	#if temp not in new_acc: #filter same pallets because of same elements
-				new_acc.append(temp)
+				new_acc.add(tuple(temp))
 
-	if recur % 5 == 0:
-		return delete_same_combis(new_acc)
-	else:
-		return new_acc
+	return new_acc
 
 def delete_same_combis(combis):
 	"""
@@ -215,18 +213,22 @@ if __name__ == '__main__':
 	allcombis = gen_pallets(sorted(elem,reverse=True), 0)
 	print 'Step 1. gen_pallets...Done'
 	
-	print 'Step 2. distinc_combis...starts'
-	distinc_combis = delete_same_combis(allcombis)
-	print 'Step 2. distinc_combis...Done'
-	print "Len:", len(distinc_combis)
-	print '-'*40
+	# print 'Step 2. distinc_combis...starts'
+	# distinc_combis = delete_same_combis(allcombis)
+	# print 'Step 2. distinc_combis...Done'
+	# print "Len:", len(distinc_combis)
+	# print '-'*40
 
-	print 'Step 2.1 delete_short_cuts...starts'
-	distinc_combis = delete_short_cuts(distinc_combis, MAX_ELEMENT_LENGTH)
-	print 'Step 2.1 delete_short_cuts...Done'
-	print "Len:", len(distinc_combis)
+	# print 'Step 2.1 delete_short_cuts...starts'
+	# distinc_combis = delete_short_cuts(distinc_combis, MAX_ELEMENT_LENGTH)
+	# print 'Step 2.1 delete_short_cuts...Done'
+	# print "Len:", len(distinc_combis)
 
 	print 'Step 3. geting cuts.... starts'
+
+	distinc_combis = []
+	for pal in allcombis:
+		distinc_combis.append(list(pal))
 
 	distinc_combis_sorted = sorted(distinc_combis, key=lambda pallet: PALLET_LEN - sum(pallet))
 
