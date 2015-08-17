@@ -16,7 +16,7 @@ def get_data_from_file(filename, separator):
 	line = elements.readline()
 	while line:
 		temp = line.split(separator)
-		length = float(temp[0])
+		length = int(temp[0])
 		num = int(temp[1])
 		pieces_dict[length] = num
 
@@ -52,14 +52,18 @@ def gen_pallets(pieces, recur):
 	print datetime.datetime.now(), '#', recur, 'len acc:', len(new_acc)
 
 	for pallet in acc:
-		if sum(pallet) + first <= PALLET_LEN:
+		sum_pallet = sum(pallet)
+		if sum_pallet + first <= PALLET_LEN:
 			for i in range(len(pallet) + 1):
 				temp = pallet[:]
 				temp.insert(i,first)
-				if temp not in new_acc: #filter same pallets because of same elements
-					new_acc.append(temp)
+			#too expensive operation	#if temp not in new_acc: #filter same pallets because of same elements
+				new_acc.append(temp)
 
-	return delete_same_combis(new_acc)
+	if recur % 5 == 0:
+		return delete_same_combis(new_acc)
+	else:
+		return new_acc
 
 def delete_same_combis(combis):
 	"""
@@ -208,7 +212,7 @@ if __name__ == '__main__':
 	print 'Total length: ', sum_length
 
 	print 'Step 1. gen_pallets...starts'
-	allcombis = gen_pallets(elem, 0)
+	allcombis = gen_pallets(sorted(elem,reverse=True), 0)
 	print 'Step 1. gen_pallets...Done'
 	
 	print 'Step 2. distinc_combis...starts'
