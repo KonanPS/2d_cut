@@ -60,11 +60,16 @@ def gen_pallets(pieces, recur):
 	for pallet in acc:
 		sum_pallet = sum(pallet)
 		if sum_pallet + first <= PALLET_LEN:
-			for i in range(len(pallet) + 1):
-				temp = list(pallet)
-				temp.insert(i,first)
-			#too expensive operation	#if temp not in new_acc: #filter same pallets because of same elements
-				new_acc.add(tuple(temp))
+			# for i in range(len(pallet) + 1):
+			# 	temp = list(pallet)
+			# 	temp.insert(i,first)
+			# #too expensive operation	#if temp not in new_acc: #filter same pallets because of same elements
+			# 	new_acc.add(tuple(temp))
+			temp = list(pallet)
+			temp.append(first)
+			temp.sort()
+			new_acc.add(tuple(temp))
+
 
 	gc.collect()
 	return new_acc
