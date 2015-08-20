@@ -4,6 +4,8 @@ def get_data_from_file(filename, separator):
 	opens file with pieces in format
 	length; number
 
+	append to pieces_list max num of element that could be placed on one pallet
+
 	returns list with all elements
 	"""	
 	elements = open(filename)
@@ -20,7 +22,7 @@ def get_data_from_file(filename, separator):
 		num = int(temp[1])
 		pieces_dict[length] = num
 
-		for _ind in range(num):
+		for _ind in range(int(PALLET_LEN / length)):
 			pieces_list.append(length)
 
 		line = elements.readline()
@@ -36,6 +38,8 @@ def gen_pallets(pieces, recur):
 	returns list of conbis (list)
 	"""
 	import datetime
+	import gc
+	import sys
 
 	recur += 1
 	first = pieces[0]
@@ -51,7 +55,8 @@ def gen_pallets(pieces, recur):
 	new_acc = acc.copy()
 	new_acc.add((first,))
 
-	print datetime.datetime.now(), '#', recur, 'len acc:', len(new_acc)
+	print datetime.datetime.now(), '#', recur, 'len acc:', len(new_acc), 'size', sys.getsizeof(new_acc)
+
 	for pallet in acc:
 		sum_pallet = sum(pallet)
 		if sum_pallet + first <= PALLET_LEN:
@@ -61,6 +66,7 @@ def gen_pallets(pieces, recur):
 			#too expensive operation	#if temp not in new_acc: #filter same pallets because of same elements
 				new_acc.add(tuple(temp))
 
+	gc.collect()
 	return new_acc
 
 def delete_same_combis(combis):
@@ -192,9 +198,8 @@ def second_way(pieces_dict):
 
 	return cuts, total_residue
 
-if __name__ == '__main__':
-	
-#FIXME delete pallets with the same num of elements
+def main():
+
 	global PALLET_LEN
 
 	elem, pieces_dict, PALLET_LEN = get_data_from_file('elements.txt',';') # elem, pieces_dict and PALLET_LEN
@@ -211,6 +216,10 @@ if __name__ == '__main__':
 
 	print 'Step 1. gen_pallets...starts'
 	allcombis = gen_pallets(sorted(elem,reverse=True), 0)
+	# min_piece = min(pieces_dict.keys())
+	# max_num = int(PALLET_LEN / min_piece)
+	# allcombis_generator = itertools.permutations(elem, max_num)
+
 	print 'Step 1. gen_pallets...Done'
 	
 	# print 'Step 2. distinc_combis...starts'
@@ -227,18 +236,27 @@ if __name__ == '__main__':
 	print 'Step 3. geting cuts.... starts'
 
 	distinc_combis = []
+	i = 0
 	for pal in allcombis:
 		distinc_combis.append(list(pal))
 
+	print 'Step 3.1 distinc_combis_sorted'
 	distinc_combis_sorted = sorted(distinc_combis, key=lambda pallet: PALLET_LEN - sum(pallet))
 
+	print 'Step 3.2 first_way'
 	cuts, total_residue = first_way(pieces_dict, distinc_combis_sorted)
 	# cuts, total_residue = second_way(pieces_dict)
 
+	print 'Step 3.3 output'
 	output = open('out.txt','w')
 	for cut in cuts:
 		output.write(str(cut) + '\n')
 	output.write('Total residue:' + str(total_residue))
 	output.close()
+
+if __name__ == '__main__':
+	main()
+#FIXME delete pallets with the same num of elements
+
 
 
