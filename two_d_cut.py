@@ -258,6 +258,7 @@ def main():
 		output.write(str(cut) + '\n')
 	output.write('Total residue:' + str(total_residue))
 	output.close()
+	return cuts, total_residue
 
 if __name__ == '__main__':
 	main()
