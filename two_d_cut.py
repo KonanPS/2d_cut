@@ -22,6 +22,7 @@ def get_data_from_file(filename, separator):
 		num = int(temp[1])
 		pieces_dict[length] = num
 
+		#pieces list is list of max int number of element on one PALLET
 		for _ind in range(int(PALLET_LEN / length)):
 			pieces_list.append(length)
 
@@ -203,11 +204,21 @@ def second_way(pieces_dict):
 
 	return cuts, total_residue
 
-def main():
+def main(filename=None, pieces=None, LEN=None):
 
 	global PALLET_LEN
 
-	elem, pieces_dict, PALLET_LEN = get_data_from_file('elements.txt',';') # elem, pieces_dict and PALLET_LEN
+	if filename:
+		elem, pieces_dict, PALLET_LEN = get_data_from_file(filename,';') # elem, pieces_dict and PALLET_LEN
+	else:
+		pieces_dict = pieces
+		PALLET_LEN = LEN
+		print "PALLET_LEN", PALLET_LEN
+		elem = []
+		for length in pieces_dict.keys():
+			for _ind in range(int(PALLET_LEN / length)):
+				elem.append(length) 
+		
 	sum_length = sum(elem)
 	
 	MAX_PALLEN_NUM = int(sum_length / PALLET_LEN) + 1
@@ -261,7 +272,7 @@ def main():
 	return cuts, total_residue
 
 if __name__ == '__main__':
-	main()
+	main('elements.txt')
 #FIXME delete pallets with the same num of elements
 
 
